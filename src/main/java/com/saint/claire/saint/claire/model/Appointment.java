@@ -24,5 +24,7 @@ public class Appointment {
     private Date date;
     @Column(name= "patientName")
     private String patientName;
+    @Column(name= "appointmentId")
+    private Long appointmentId;
 
 }

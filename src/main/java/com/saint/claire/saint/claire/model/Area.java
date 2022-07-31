@@ -25,7 +25,8 @@ public class Area {
     private String name;
     @Column(name= "doctor")
     private String doctor;
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)//One Area have multiple appointments
+    @JoinColumn(name = "appointmentId")
     private List<Appointment> appointmentList;
 
 }

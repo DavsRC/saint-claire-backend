@@ -46,12 +46,11 @@ AreaService implements AreaGateway {
     }
 
     private AppointmentDTO convertAppointmentToDTO(Appointment appointment) {
-        AppointmentDTO appointmentDTO = AppointmentDTO.builder()
+        return AppointmentDTO.builder()
                 .id(appointment.getId())
                 .date(appointment.getDate())
                 .patientName(appointment.getPatientName())
                 .build();
-        return appointmentDTO;
     }
 
     @Override
@@ -66,15 +65,6 @@ AreaService implements AreaGateway {
                 .name(areaDTO.getName())
                 .doctor(areaDTO.getDoctor())
                 .appointmentList(convertAppointListDTOToEntity(areaDTO))
-                .build();
-    }
-
-    private void buildAreaDTO(Area area) {
-        AreaDTO.builder()
-                .id(area.getId())
-                .name(area.getName())
-                .doctor(area.getDoctor())
-                .appointmentDTOList(convertAppointListToDTO(area))
                 .build();
     }
 
@@ -106,11 +96,7 @@ AreaService implements AreaGateway {
 
     @Override
     public void deleteArea(Long id) {
-        Optional<Area> area =  areaRepository.findById(id);
-        if(area.isPresent()){
-            areaRepository.deleteById(id);
-        }
-        throw new RuntimeException("The id doesn't exist");
+        areaRepository.deleteById(id);
     }
 
     @Override
