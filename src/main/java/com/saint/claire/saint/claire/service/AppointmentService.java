@@ -2,6 +2,7 @@ package com.saint.claire.saint.claire.service;
 
 import com.saint.claire.saint.claire.dto.AppointmentDTO;
 import com.saint.claire.saint.claire.model.Appointment;
+import com.saint.claire.saint.claire.model.Area;
 import com.saint.claire.saint.claire.repository.AppointmentRepository;
 import com.saint.claire.saint.claire.repository.AreaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,7 @@ public class AppointmentService implements AppointmentGateway{
                 .id(appointment.getId())
                 .date(appointment.getDate())
                 .patientName(appointment.getPatientName())
-                .appointmentId(appointment.getAppointmentId())
+                .areaId(appointment.getAreaId())
                 .build();
     }
 
@@ -48,7 +49,7 @@ public class AppointmentService implements AppointmentGateway{
                 .id(appointmentDTO.getId())
                 .date(appointmentDTO.getDate())
                 .patientName(appointmentDTO.getPatientName())
-                .appointmentId(appointmentDTO.getAppointmentId())
+                .areaId(appointmentDTO.getAreaId())
                 .build();
     }
 
@@ -56,8 +57,8 @@ public class AppointmentService implements AppointmentGateway{
     public void deleteAppointment(Long id) {
         Optional<Appointment> appointment =  appointmentRepository.findById(id);
         if(appointment.isPresent()){
-
-            appointmentRepository.deleteById(id);
+            AppointmentDTO appointmentDTO = convertAppointmentToDTO(appointment.get());
+            appointmentRepository.deleteById(appointmentDTO.getId());
         }
         throw new RuntimeException("The id doesn't exist");
     }

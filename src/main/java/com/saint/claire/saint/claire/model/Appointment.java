@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -24,7 +25,8 @@ public class Appointment {
     private Date date;
     @Column(name= "patientName")
     private String patientName;
-    @Column(name= "appointmentId")
-    private Long appointmentId;
+    @JoinColumn(name = "areaId")
+    @Column(name= "areaId")
+    private Long areaId;
 
 }

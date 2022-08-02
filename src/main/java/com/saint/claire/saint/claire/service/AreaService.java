@@ -6,6 +6,8 @@ import com.saint.claire.saint.claire.dto.AreaDTO;
 import com.saint.claire.saint.claire.model.Appointment;
 import com.saint.claire.saint.claire.model.Area;
 import com.saint.claire.saint.claire.repository.AreaRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,11 +15,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.isNull;
+
 
 @Service
 public class
 AreaService implements AreaGateway {
 
+    private final static Logger log = LoggerFactory.getLogger(AreaService.class);
     @Autowired
     private AreaRepository areaRepository;
 
@@ -35,7 +40,7 @@ AreaService implements AreaGateway {
                 .id(area.getId())
                 .name(area.getName())
                 .doctor(area.getDoctor())
-                .appointmentDTOList(getAppointmentDTOList(area)).build();
+                .appointmentList(convertAppointListToDTO(area)).build();
     }
 
     private List<AppointmentDTO> getAppointmentDTOList(Area area) {
@@ -55,8 +60,7 @@ AreaService implements AreaGateway {
 
     @Override
     public AreaDTO saveArea(AreaDTO areaDTO) {
-        Area area = buildArea(areaDTO);
-        return convertAreaToDTO(areaRepository.save(area));
+        return convertAreaToDTO(areaRepository.save(buildArea(areaDTO)));
     }
 
     private Area buildArea(AreaDTO areaDTO) {
@@ -69,34 +73,40 @@ AreaService implements AreaGateway {
     }
 
     private List<Appointment> convertAppointListDTOToEntity(AreaDTO areaDTO) {
-        return areaDTO.getAppointmentDTOList()
+        return areaDTO.getAppointmentList()
                 .stream()
-                .map(appointmentDTO -> {
-                    return Appointment
+                .map(appointmentDTO ->
+                     Appointment
                             .builder()
                             .id(appointmentDTO.getId())
                             .date(appointmentDTO.getDate())
                             .patientName(appointmentDTO.getPatientName())
-                            .build();
-                }).collect(Collectors.toList());
+                             .areaId(appointmentDTO.getAreaId())
+                            .build()).collect(Collectors.toList());
     }
 
     private List<AppointmentDTO> convertAppointListToDTO(Area area) {
         return area.getAppointmentList()
                 .stream()
-                .map(appointment -> {
-                    return AppointmentDTO
+                .map(appointment ->
+                     AppointmentDTO
                             .builder()
                             .id(appointment.getId())
                             .date(appointment.getDate())
                             .patientName(appointment.getPatientName())
-                            .build();
-                }).collect(Collectors.toList());
+                             .areaId(appointment.getAreaId())
+                            .build()).collect(Collectors.toList());
     }
 
     @Override
     public void deleteArea(Long id) {
-        areaRepository.deleteById(id);
+       Area area = areaRepository.getReferenceById(id);
+       if(isNull(area.getId())){
+           log.info("The area's id doesn't exist");
+           throw new RuntimeException("The id doesn't exist");
+       }
+       areaRepository.deleteById(id);
+
     }
 
     @Override
